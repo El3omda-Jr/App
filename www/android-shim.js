@@ -3,9 +3,27 @@
    Does nothing in a normal browser. */
 (function () {
   var C = window.Capacitor || (window.parent && window.parent !== window && window.parent.Capacitor);
-  if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
-  var FS = C.registerPlugin('Filesystem'), SH = C.registerPlugin('Share'),
-      PR = C.registerPlugin('PrintPlugin'), BR = C.registerPlugin('Browser');
+  if (!C || !C.isNativePlatform || !C.isNativePlatform()) {
+    console.log('AQUALIMA shim: not native platform');
+    return;
+  }
+  try {
+    var FS = C.registerPlugin('Filesystem'), SH = C.registerPlugin('Share'),
+        PR = C.registerPlugin('PrintPlugin'), BR = C.registerPlugin('Browser');
+    // Debug toast that the shim loaded
+    setTimeout(function() {
+      try {
+        var d = document.createElement('div');
+        d.textContent = 'Shim OK - PrintPlugin: ' + (PR ? 'موجود' : 'مش موجود');
+        d.style.cssText = 'position:fixed;z-index:2147483647;left:50%;top:20px;transform:translateX(-50%);background:#087c91;color:#fff;padding:8px 14px;border-radius:10px;font:700 13px Tahoma,Arial;';
+        (document.body || document.documentElement).appendChild(d);
+        setTimeout(function () { d.remove(); }, 4000);
+      } catch(e){}
+    }, 1500);
+  } catch(err) {
+    alert('Shim error: ' + err);
+    return;
+  }
 
   function errText(e) { return (e && (e.message || e.errorMessage || e.code)) || String(e); }
   function isCancel(e) { return /cancel/i.test(errText(e)); }
@@ -96,9 +114,14 @@
   }
   function printNow(html, name) {
     toast('جارٍ تجهيز الطباعة…');
+    if (!PR || !PR.printHtmlChunk) {
+      alert('PrintPlugin مش موجود أو مش شغال');
+      return Promise.reject('no plugin');
+    }
     return sendPrint(html, name).catch(function (e) { fail('تعذر الطباعة', e); });
   }
   window.print = function () { /* snapshot synchronously: the app cleans up right after calling print() */
+    toast('تم استدعاء window.print');
     var html;
     try { html = snapshotDoc(document); } catch (e) { fail('تعذر الطباعة', e); return; }
     printNow(html, document.title || 'AQUALIMA');
