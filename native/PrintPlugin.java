@@ -1,4 +1,4 @@
-package __PKG__;
+package com.aqualima.shams;
 
 import android.content.Context;
 import android.os.Handler;
