@@ -1,0 +1,9 @@
+{
+  "appId": "com.aqualima.shams",
+  "appName": "AQUALIMA SHAMS",
+  "webDir": "www",
+  "backgroundColor": "#f3f6fa",
+  "android": {
+    "adjustMarginsForEdgeToEdge": "auto"
+  }
+}
